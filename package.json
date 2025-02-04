@@ -1,0 +1,31 @@
+{
+  "name": "mio-track",
+  "version": "0.0.1",
+  "files": [
+    "dist/mio-track.cdn.mjs",
+    "dist/mio-track.esm.mjs",
+    "README.md"
+  ],
+  "description": "A simple tracker",
+  "module": "dist/mio-track.esm.mjs",
+  "scripts": {
+    "build": "webpack",
+    "dev": "webpack --mode development --watch",
+    "format": "prettier --write ./src/**/*.ts"
+  },
+  "keywords": [],
+  "author": "Krumio",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.10.10",
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "prettier": "^3.4.2",
+    "ts-loader": "^9.5.1",
+    "typescript": "^5.7.3",
+    "url": "^0.11.4",
+    "webpack": "^5.90.1",
+    "webpack-cli": "^5.1.4"
+  }
+}
