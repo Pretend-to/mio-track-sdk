@@ -79,7 +79,11 @@ class Event {
         log('send event failed');
       }
     } else {
-      log('send event failed');
+      if (res.status === 401) {
+        log('token is invalid');
+      } else {
+        log('send event failed');
+      }
     }
   }
 }

@@ -18,7 +18,6 @@ class Tracker {
     this.auth = new Auth(this.config);
     this.loader = new Loader();
     this.avaliable = false;
-    log('tracker inited');
   }
 
   public async init() {

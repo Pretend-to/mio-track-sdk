@@ -2,6 +2,7 @@
 export interface TrackerConfig {
   appId: string;
   endpoint: string;
+  uid?: string;
   debug?: boolean;
 }
 

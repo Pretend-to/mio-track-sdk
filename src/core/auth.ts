@@ -12,8 +12,6 @@ class Auth {
     this.hasRegistered = false;
     this.sessionId = '';
     this.token = '';
-
-    log('auth module inited');
   }
 
   private loadToken() {
@@ -23,13 +21,35 @@ class Auth {
       this.token = token;
       this.hasRegistered = true;
     } else {
-      this.sessionId = generateUUID();
+      const sessionId = localStorage.getItem('mts');
+      if (sessionId) {
+        this.sessionId = sessionId;
+      } else {
+        this.sessionId = generateUUID();
+        localStorage.setItem('mts', this.sessionId);
+      }
     }
+  }
+
+  private reset() {
+    this.hasRegistered = false;
+    this.sessionId = '';
+    this.token = '';
+    localStorage.removeItem('mtt');
+  }
+
+  public async logout() {
+    this.config.setConfig({
+      uid: '',
+      appId: '',
+    });
+    this.reset();
   }
 
   private async reqToken() {
     const config = this.config.getConfig();
     const data = {
+      uid: config.uid,
       sessionId: this.sessionId,
       appId: config.appId,
     };
