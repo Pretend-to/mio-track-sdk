@@ -16,21 +16,29 @@ interface DataEvents {
 
 class Loader extends EventEmitter {
   private dataEvents: DataEvents;
-  private observer: IntersectionObserver;
+  private observer: IntersectionObserver | null = null;
+  private viewElements: Map<HTMLElement, string> = new Map();
 
   constructor() {
     super();
     this.dataEvents = {};
-    this.observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          const name = entry.target.getAttribute('data-name');
-          if (name) {
-            this.record('data', { name, type: 'view' });
+
+    if ('IntersectionObserver' in window) {
+      this.observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const name = this.viewElements.get(entry.target as HTMLElement);
+            if (name) {
+              this.record('data', { name, type: 'view' });
+              this.viewElements.delete(entry.target as HTMLElement);
+              this.observer?.unobserve(entry.target);
+            }
           }
-        }
+        });
       });
-    });
+    } else {
+      console.warn("Intersection Observer is not supported in this browser.");
+    }
   }
 
   private record(
@@ -57,10 +65,8 @@ class Loader extends EventEmitter {
       fp: 0,
       fcp: 0,
     };
-
     const navigationEntry = performance.getEntriesByType('navigation')[0];
     if (navigationEntry) {
-      // Check if navigationEntry exists
       const {
         domainLookupEnd,
         domainLookupStart,
@@ -79,21 +85,19 @@ class Loader extends EventEmitter {
         redirectStart,
         redirectCount,
       } = navigationEntry as PerformanceNavigationTiming;
-
       const fpEntry = performance
         .getEntriesByType('paint')
         .find(({ name }) => name === 'first-paint');
       const fcpEntry = performance
         .getEntriesByType('paint')
         .find(({ name }) => name === 'first-contentful-paint');
-
       data.fp = fpEntry?.startTime || 0;
       data.fcp = fcpEntry?.startTime || 0;
       data.dnsSearch = domainLookupEnd - domainLookupStart;
       data.tcpConnect = connectEnd - connectStart;
       data.sslConnect = secureConnectionStart
         ? secureConnectionStart - connectStart
-        : 0; // Check if secureConnectionStart exists
+        : 0;
       data.request = responseStart - requestStart;
       data.response = responseEnd - responseStart;
       data.parseDomTree = domInteractive - responseEnd;
@@ -102,7 +106,6 @@ class Loader extends EventEmitter {
       data.redirect = redirectCount;
       data.redirectTime = redirectEnd - redirectStart;
       data.duration = duration;
-
       for (const key of Object.keys(data)) {
         data[key as keyof PerformanceEventData] = formatDecimal(
           data[key as keyof PerformanceEventData],
@@ -110,15 +113,13 @@ class Loader extends EventEmitter {
         );
       }
     }
-
     this.record('performance', data);
   }
 
   private loadExceptionEvent() {
-    // Add your exception event logic here.  Example:
     window.onerror = (event, source, lineno, colno, error) => {
       const data: ExceptionEventData = {
-        message: error?.message || event || '', // Get the error message
+        message: error?.message || event || '',
         source: source || '',
         lineno: lineno || 0,
         colno: colno || 0,
@@ -138,7 +139,6 @@ class Loader extends EventEmitter {
       },
       url: window.location.href,
     };
-
     this.record('data', { type: 'platform', name: 'platform', data });
   }
 
@@ -150,13 +150,11 @@ class Loader extends EventEmitter {
       Android: /Android/i,
       iOS: /iPhone|iPad|iPod/i,
     };
-
     for (const [os, regex] of Object.entries(osList)) {
       if (regex.test(userAgent)) {
         return os;
       }
     }
-
     return 'Other';
   }
 
@@ -169,20 +167,46 @@ class Loader extends EventEmitter {
       IE: /MSIE|Trident/i,
       Opera: /OPR/i,
     };
-
     for (const [browser, regex] of Object.entries(browserList)) {
       if (regex.test(userAgent)) {
         return browser;
       }
     }
-
     return 'Other';
   }
 
   public loadViewEvent(dom: HTMLElement, name: string) {
-    dom.setAttribute('data-name', name);
-    this.observer.observe(dom);
+    if (this.observer) {
+      this.viewElements.set(dom, name);
+      this.observer.observe(dom);
+    } else {
+      let viewed = false;
+      const handleView = () => {
+        if (!viewed) {
+          viewed = true;
+          this.record('data', { name, type: 'view' });
+          dom.removeEventListener('scroll', handleView);
+          window.removeEventListener('resize', handleView);
+        }
+      };
+      dom.addEventListener('scroll', handleView);
+      window.addEventListener('resize', handleView);
+      if (this.isElementInViewport(dom)) {
+        handleView();
+      }
+    }
   }
+
+  private isElementInViewport(el: HTMLElement) {
+    const rect = el.getBoundingClientRect();
+    return (
+      rect.top >= 0 &&
+      rect.left >= 0 &&
+      rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+      rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+    );
+  }
+
 
   public loadClickEvent(dom: HTMLElement, name: string) {
     dom.addEventListener('click', () => {
@@ -191,8 +215,6 @@ class Loader extends EventEmitter {
   }
 
   public loadCustomEvent(name: string, data: object) {
-    // Use RecordData or a more specific type if possible
-
     this.record('data', { data, name, type: 'custom' });
   }
 
@@ -204,13 +226,12 @@ class Loader extends EventEmitter {
         const resData = await res.json();
         if (resData.code === 0) {
           this.dataEvents = resData.data;
-          // After initializing dataEvents, load other events
           this.loadPerformanceEvent();
           this.loadExceptionEvent();
           this.loadPlatformEvent();
         }
       } else {
-        console.error('load data events error:', res.status, res.statusText); // Include status and statusText
+        console.error('load data events error:', res.status, res.statusText);
       }
     } catch (error) {
       console.error('Error fetching data events:', error);
