@@ -208,7 +208,6 @@ class Loader extends EventEmitter {
           this.loadPerformanceEvent();
           this.loadExceptionEvent();
           this.loadPlatformEvent();
-          console.log(this.dataEvents);
         }
       } else {
         console.error('load data events error:', res.status, res.statusText); // Include status and statusText

@@ -37,7 +37,6 @@ class Tracker {
   private enableEventEmit() {
     this.loader.on('record', (e: EventEmittedData) => {
       if (e.type == 'data') {
-        console.log(e);
         const data = e.data as RecordData;
         this.event.record(data.type, { name: data.name, data: data.data });
       } else if (e.type == 'performance') {
@@ -46,6 +45,10 @@ class Tracker {
         this.event.record(e.type, e.data);
       }
     });
+  }
+
+  public addCommonParams(params: Record<string, any>) {
+    this.event.addCommonParams(params);
   }
 
   public view(name: string, dom: HTMLElement) {
@@ -59,6 +62,15 @@ class Tracker {
   public custom(name: string, data: any) {
     this.loader.loadCustomEvent(name, data);
   }
+
+  public manualView(name: string) {
+    this.event.record('view', { name, type: 'view' });
+  }
+
+  public manualClick(name: string) {
+    this.event.record('click', { name, type: 'click' });
+  }
+
 }
 
 export default Tracker;

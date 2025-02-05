@@ -13,7 +13,7 @@ module.exports = {
       },
     },
     'mio-track.esm': {
-      import: './src/index.ts',
+      import: './src/module.ts',
       library: {
         type: 'module',
       },

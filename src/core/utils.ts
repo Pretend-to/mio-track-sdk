@@ -1,3 +1,5 @@
+import { TrackEvent } from '../types/index';
+
 // src/core/utils.ts
 export const generateUUID = (): string => {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
@@ -86,5 +88,42 @@ export class EventEmitter {
     if (this.events[eventName]) {
       delete this.events[eventName];
     }
+  }
+}
+
+export class eventsQueue {
+  private queue: TrackEvent[] = [];
+  private max: number;
+
+  constructor(max_batch_size?: number) {
+    this.queue = [];
+    this.max = max_batch_size ?? 10;
+
+    const stroge = localStorage.getItem('mteq');
+    if (stroge) {
+      this.queue = JSON.parse(stroge);
+    }
+
+  }
+
+  public push(event: TrackEvent): void {
+    this.queue.push(event);
+    this.setStroge();
+  }
+
+  private setStroge() {
+    localStorage.setItem('mteq', JSON.stringify(this.queue));
+  }
+
+  public pop() : TrackEvent[]{
+    const events = this.queue.slice(0, this.max);
+    this.queue = this.queue.slice(this.max);
+    this.setStroge();
+    return events;
+  }
+
+  public clear() {
+    this.queue = [];
+    this.setStroge();
   }
 }

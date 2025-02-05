@@ -3,6 +3,8 @@ export interface TrackerConfig {
   appId: string;
   endpoint: string;
   uid?: string;
+  report_interval?: number;
+  max_batch_size?: number;
   debug?: boolean;
 }
 
@@ -83,7 +85,7 @@ export type TrackType = keyof TrackEventDataMap;
 export interface TrackEvent {
   type: TrackType;
   time: number;
-  data?: TrackEventDataMap[keyof TrackEventDataMap];
+  data?: TrackEventDataMap[keyof TrackEventDataMap] | any;
 }
 
 export interface EventEmittedData {

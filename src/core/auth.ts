@@ -38,10 +38,17 @@ class Auth {
     localStorage.removeItem('mtt');
   }
 
-  public async logout() {
+  public logout() {
     this.config.setConfig({
       uid: '',
       appId: '',
+    });
+    this.reset();
+  }
+
+  public login(uid: string) {
+    this.config.setConfig({
+      uid,
     });
     this.reset();
   }

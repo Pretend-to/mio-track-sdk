@@ -1,6 +1,6 @@
 {
   "name": "mio-track",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "files": [
     "dist/mio-track.cdn.mjs",
     "dist/mio-track.esm.mjs",
