@@ -30,8 +30,8 @@ class Loader extends EventEmitter {
             const name = this.viewElements.get(entry.target as HTMLElement);
             if (name) {
               this.record('data', { name, type: 'view' });
-              this.viewElements.delete(entry.target as HTMLElement);
-              this.observer?.unobserve(entry.target);
+              // this.viewElements.delete(entry.target as HTMLElement);
+              // this.observer?.unobserve(entry.target);
             }
           }
         });

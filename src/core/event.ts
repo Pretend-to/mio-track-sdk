@@ -45,14 +45,19 @@ class Event {
     // TODO: 解决 ts 逆天错误
     if (type === EventTypes.click || type === EventTypes.view) {
       const data = {
-        ...event.data,
-        ...this.customDataParams,
+        name: DataTransfer.name,
+        params: {
+         ...this.customDataParams,
+        }
       } as DataEventData;
       event.data = { ...data };
     } else if (type === EventTypes.custom) {
       const data = {
-       ...event.data.data,
-       ...this.customDataParams,
+       name: event.data.name,
+       params: {
+        ...event.data.data,
+        ...this.customDataParams,
+       }
       } as DataEventData;
       event.data = { ...data };
     }

@@ -41,7 +41,6 @@ class Auth {
   public logout() {
     this.config.setConfig({
       uid: '',
-      appId: '',
     });
     this.reset();
   }
@@ -50,7 +49,7 @@ class Auth {
     this.config.setConfig({
       uid,
     });
-    this.reset();
+    this.reqToken();
   }
 
   private async reqToken() {
