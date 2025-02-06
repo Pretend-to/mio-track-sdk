@@ -38,14 +38,14 @@ class Event {
 
     const event: TrackEvent = {
       type,
+      data,
       time: Date.now(),
-      data: data,
     };
 
     // TODO: 解决 ts 逆天错误
     if (type === EventTypes.click || type === EventTypes.view) {
       const data = {
-        name: DataTransfer.name,
+        name: event.data.name,
         params: {
          ...this.customDataParams,
         }
