@@ -13,8 +13,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - run: npm ci
-      - run: npm test
+          registry-url: https://registry.npmjs.org/
+      - run: npm install -g pnpm  # 安装 pnpm
+      - run: pnpm install          # 使用 pnpm 安装依赖
+      - run: pnpm test             # 使用 pnpm 运行测试
 
   publish-npm:
     needs: build
@@ -25,8 +27,9 @@ jobs:
         with:
           node-version: 20
           registry-url: https://registry.npmjs.org/
-      - run: npm ci
-      - run: npm run build
-      - run: npm publish
+      - run: npm install -g pnpm    # 安装 pnpm
+      - run: pnpm install           # 使用 pnpm 安装依赖
+      - run: pnpm run build         # 使用 pnpm 构建项目
+      - run: pnpm publish           # 使用 pnpm 发布
         env:
-          NODE_AUTH_TOKEN: ${{secrets.npm_token}}
+          NODE_AUTH_TOKEN: ${{ secrets.npm_token }}
