@@ -5,6 +5,7 @@ class Config {
   config: TrackerConfig;
 
   constructor(config: TrackerConfig) {
+    config.endpoint = config.endpoint || 'https://track.krumio.com';
     this.config = {
       debug: false,
       ...config,
