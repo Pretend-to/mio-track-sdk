@@ -16,6 +16,9 @@
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage"
   },
+  "publishConfig": {
+    "publish-branch": "product"
+  },
   "keywords": [],
   "author": "Krumio",
   "license": "ISC",
