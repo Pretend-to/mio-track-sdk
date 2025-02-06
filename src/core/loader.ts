@@ -30,6 +30,7 @@ class Loader extends EventEmitter {
             const name = this.viewElements.get(entry.target as HTMLElement);
             if (name) {
               this.record('data', { name, type: 'view' });
+              // 持续监听该元素的可见性变化
               // this.viewElements.delete(entry.target as HTMLElement);
               // this.observer?.unobserve(entry.target);
             }
