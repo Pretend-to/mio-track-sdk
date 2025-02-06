@@ -8,6 +8,12 @@ export interface TrackerConfig {
   debug?: boolean;
 }
 
+export interface AuthConfig {
+  uid?: string;
+  sessionId: string;
+  appId: string;
+}
+
 // 用于异常事件的数据类型
 export interface ExceptionEventData {
   message: string | Event;

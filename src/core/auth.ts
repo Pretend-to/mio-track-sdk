@@ -1,5 +1,6 @@
 import Config from './config';
-import { generateUUID, log } from './utils';
+import { generateUUID, log, requestToken  } from './utils';
+import { AuthConfig } from '../types/index';
 
 class Auth {
   private config: Config;
@@ -54,32 +55,18 @@ class Auth {
 
   private async reqToken() {
     const config = this.config.getConfig();
-    const data = {
-      uid: config.uid,
+    const data : AuthConfig = {
+      uid: config.uid || undefined,
       sessionId: this.sessionId,
       appId: config.appId,
     };
-    const res = await fetch(config.endpoint + '/v1/sdk/register', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    });
-    if (res.ok) {
-      const resData = await res.json();
-      if (resData.code === 0) {
-        this.token = resData.data.token;
-        this.hasRegistered = true;
-        localStorage.setItem('mtt', this.token);
-        return true;
-      } else {
-        log('register failed');
-        this.hasRegistered = false;
-        return false;
-      }
-    } else {
-      const code = res.status;
+    try {
+      this.token = await requestToken(data)
+      this.hasRegistered = true;
+      localStorage.setItem('mtt', this.token);
+      return true;
+    } catch (e: any) {
+      const code = e.code;
       switch (code) {
         case 404:
           log('appId not found');
@@ -90,7 +77,7 @@ class Auth {
         default:
           log('unknow error');
           break;
-      }
+      }      
       this.hasRegistered = false;
       return false;
     }
