@@ -1,4 +1,4 @@
-import { TrackEvent } from '../types/index';
+import { TrackEvent, AuthConfig } from '../types/index';
 
 // src/core/utils.ts
 export const generateUUID = (): string => {
@@ -31,6 +31,26 @@ export const authedFetch = async (path: string, options: RequestInit) => {
   }
   return fetch(`${endpoint + path}`, options);
 };
+
+
+
+export const requestToken = async (config: AuthConfig) => {
+  const endpoint = localStorage.getItem('mte');
+  const res = await fetch(endpoint + '/v1/sdk/register', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(config),
+  });
+  if (res.ok) {
+    const data = await res.json();
+    return data.data.token;
+  } else {
+    const code = res.status;
+    return Promise.reject({code});
+  }
+}
 
 export const formatDecimal = (num: number, decimal: number) => {
   if (!isFinite(num) || isNaN(num)) {
