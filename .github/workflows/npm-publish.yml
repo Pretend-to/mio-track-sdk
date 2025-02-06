@@ -1,10 +1,8 @@
 name: Node.js Package
-
 on:
   push:
     branches:
       - main
-
 jobs:
   publish-npm:
     runs-on: ubuntu-latest
@@ -13,9 +11,11 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - run : npm install -g pnpm  # 安装 pnpm
-      - run: pnpm install           # 使用 pnpm 安装依赖
-      - run: npm run build         # 使用 npm 构建项目
-      - run: npm publish           # 使用 npm 发布
+          # 添加这两行配置
+          registry-url: 'https://registry.npmjs.org'
+      - run: npm install -g pnpm
+      - run: pnpm install
+      - run: npm run build
+      - run: npm publish
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
