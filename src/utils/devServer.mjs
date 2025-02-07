@@ -6,6 +6,8 @@ import cors from 'cors';
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+const reportedData = { data: [] };
+
 // 获取当前模块的目录
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -20,7 +22,7 @@ app.use(express.static(path.join(__dirname, '../../dist')));
 
 // 路由配置
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, '../../dist', 'debug.html'));
+    res.sendFile(path.join(__dirname, 'dashboard.html'));
 });
 
 // demo
@@ -38,10 +40,18 @@ app.get('/v1/sdk/data/list', (req, res) => {
 })
 
 app.post('/v1/sdk/:type/report', (req, res) => {
-    console.log(JSON.stringify(req.body,null,2))
-    const data = {code:0,data:{}}
-    res.json(data);
-})
+    reportedData.data.push({type: req.params.type, payload: req.body});
+    console.log(JSON.stringify(req.body, null, 2));
+    res.json({ code: 0, data: {} });
+
+
+});
+
+// 添加新路由，用于提供已上报的数据
+app.get('/reported_data', (req, res) => {
+    res.json(reportedData);
+});
+
 
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);

@@ -8,6 +8,7 @@
   ],
   "description": "A simple tracker",
   "module": "dist/mio-track.esm.mjs",
+  "main": "dist/mio-track.cjs.mjs",
   "scripts": {
     "build": "webpack",
     "dev": "webpack --mode development --watch",

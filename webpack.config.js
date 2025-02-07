@@ -18,6 +18,12 @@ module.exports = {
         type: 'module',
       },
     },
+    'mio-track.cjs': {
+      import: './src/module.ts',
+      library: {
+        type:'commonjs',
+      },
+    },
   },
   experiments: {
     outputModule: true,
