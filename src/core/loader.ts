@@ -139,6 +139,7 @@ class Loader extends EventEmitter {
         height: window.screen.height,
       },
       url: window.location.href,
+      referer: document.referrer,
     };
     this.record('data', { type: 'platform', name: 'platform', data });
   }

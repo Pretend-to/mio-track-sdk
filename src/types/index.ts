@@ -61,6 +61,7 @@ export interface PlatformEventData {
   browser: Browser | string; // 浏览器
   screen: ScreenData; // 屏幕分辨率
   url: string; // 页面 URL
+  referer: string; // 页面来源 URL
 }
 
 // 定义自定义事件数据结构
